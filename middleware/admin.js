@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const{adminModel}=require("../db");// Import User model
+const{adminModel}=require("../db");// Import admin model
 const { jwt_admin_pass } = require("../config");
 
 async function adminmiddleware(req, res, next) {
