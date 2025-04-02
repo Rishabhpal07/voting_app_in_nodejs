@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { z } = require("zod");
 const{jwt_admin_pass}=require("../config")
-const { adminmiddleware } = require("../middleware/user");
+const { adminmiddleware } = require("../middleware/admin");
 
 adminRouter.post("/signup", async function (req, res) {
     const requireBody = z.object({
@@ -77,6 +77,31 @@ adminRouter.post("/signin",async function (req,res) {
         });
     }
 })
+
+adminRouter.get("/profile", adminmiddleware, async function (req, res) {
+    try {
+        console.log("Middleware userId:", req.user); 
+
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized: No admin ID" });
+        }
+
+        const profile = await adminModel.findById(req.user);
+
+        if (!profile) {
+            return res.status(404).json({ message: "admin not found" });
+        }
+
+        //console.log("Fetched profile:", profile);
+        res.json({
+            message: "admin profile fetched successfully",
+            profile
+        });
+    } catch (error) {
+        console.error("Profile Fetch Error :", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+});
 
 module.exports = {
     adminRouter,
